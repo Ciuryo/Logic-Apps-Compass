@@ -1,0 +1,14 @@
+{
+  "name": "Receber e responder",
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": { "Receive_request": { "type": "Request", "kind": "Http", "inputs": { "schema": { "type": "object", "properties": { "name": { "type": "string" } } } } } },
+    "actions": {
+      "Prepare_greeting": { "type": "Compose", "inputs": "@concat('Olá, ', coalesce(triggerBody()?['name'], 'visitante'))", "runAfter": {} },
+      "Return_greeting": { "type": "Response", "kind": "Http", "inputs": { "statusCode": 200, "headers": { "Content-Type": "application/json", "x-correlation-id": "@workflow().run.name" }, "body": { "message": "@outputs('Prepare_greeting')", "correlationId": "@workflow().run.name" } }, "runAfter": { "Prepare_greeting": ["Succeeded"] } }
+    },
+    "outputs": {}
+  }
+}

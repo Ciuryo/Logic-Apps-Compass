@@ -1,0 +1,14 @@
+{
+  "name": "Exemplo com pontos de atenção",
+  "definition": {
+    "triggers": { "Receive_request": { "type": "Request", "kind": "Http", "inputs": { "schema": { "type": "object" } } } },
+    "actions": {
+      "HTTP_2": { "type": "Http", "inputs": { "method": "POST", "uri": "http://example.com/api?sig=EXEMPLO_NAO_USAR", "headers": { "Authorization": "Bearer EXEMPLO_NAO_USAR", "Ocp-Apim-Subscription-Key": "EXEMPLO_NAO_USAR", "x-functions-key": "EXEMPLO_NAO_USAR" }, "body": { "client_secret": "EXEMPLO_NAO_USAR", "environment": "production" } }, "runAfter": {} },
+      "Compose_4": { "type": "Compose", "inputs": { "email": "pessoa@example.com", "password": "EXEMPLO_NAO_USAR" }, "runAfter": { "HTTP_2": ["Succeeded"] } },
+      "Condition_7": { "type": "If", "expression": true, "actions": { "Custom_step": { "type": "UnknownEducationalType", "inputs": "Tipo desconhecido preservado", "runAfter": {} } }, "else": { "actions": {} }, "runAfter": { "Compose_4": ["Succeeded"] } },
+      "Repeat_polling": { "type": "Until", "expression": false, "actions": { "Read_status": { "type": "Compose", "inputs": "pending", "runAfter": {} } }, "runAfter": { "Condition_7": ["Succeeded"] } },
+      "Return_error": { "type": "Response", "inputs": { "statusCode": 500, "body": "Falha" }, "runAfter": { "Repeat_polling": ["Succeeded"] } }
+    },
+    "parameters": {}, "outputs": {}
+  }
+}

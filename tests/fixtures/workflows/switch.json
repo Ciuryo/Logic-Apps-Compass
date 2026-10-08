@@ -1,0 +1,18 @@
+{
+  "name": "Roteamento por categoria",
+  "definition": {
+    "triggers": { "Receive_event": { "type": "Request", "kind": "Http", "inputs": { "schema": { "type": "object", "properties": { "category": { "type": "string" } } } } } },
+    "actions": {
+      "Route_category": {
+        "type": "Switch", "expression": "@triggerBody()?['category']", "runAfter": {},
+        "cases": {
+          "Invoice": { "case": "invoice", "actions": { "Prepare_message": { "type": "Compose", "inputs": "Processar fatura", "runAfter": {} } } },
+          "Order": { "case": "order", "actions": { "Prepare_message": { "type": "Compose", "inputs": "Processar pedido", "runAfter": {} } } }
+        },
+        "default": { "actions": { "Prepare_message": { "type": "Compose", "inputs": "Categoria desconhecida: revisar evento", "runAfter": {} } } }
+      },
+      "Acknowledge_event": { "type": "Response", "kind": "Http", "inputs": { "statusCode": 202, "body": { "message": "Evento recebido", "correlationId": "@workflow().run.name" } }, "runAfter": { "Route_category": ["Succeeded"] } }
+    },
+    "parameters": {}, "outputs": {}
+  }
+}

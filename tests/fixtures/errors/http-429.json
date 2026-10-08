@@ -1,0 +1,1 @@
+{"actionName":"Consultar_servico","outputs":{"statusCode":429,"headers":{"Retry-After":"30"},"body":{"code":"TooManyRequests","message":"Limite de requisições excedido."}}}

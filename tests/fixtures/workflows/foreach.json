@@ -1,0 +1,19 @@
+{
+  "name": "Iterar itens e aguardar condição",
+  "definition": {
+    "triggers": { "Receive_items": { "type": "Request", "kind": "Http", "inputs": { "schema": { "type": "array", "items": { "type": "string" } } } } },
+    "actions": {
+      "Process_each_item": {
+        "type": "Foreach", "foreach": "@triggerBody()", "runAfter": {}, "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
+        "actions": {
+          "Wait_for_status": { "type": "Until", "expression": "@equals(outputs('Check_status'), 'done')", "limit": { "count": 3, "timeout": "PT1M" }, "runAfter": {}, "actions": {
+            "Check_status": { "type": "Compose", "inputs": "done", "runAfter": {} },
+            "Describe_item": { "type": "Compose", "inputs": "@items('Process_each_item')", "runAfter": { "Check_status": ["Succeeded"] } }
+          } }
+        }
+      },
+      "Return_completion": { "type": "Response", "kind": "Http", "inputs": { "statusCode": 200, "body": { "message": "Itens processados", "correlationId": "@workflow().run.name" } }, "runAfter": { "Process_each_item": ["Succeeded"] } }
+    },
+    "parameters": {}, "outputs": {}
+  }
+}

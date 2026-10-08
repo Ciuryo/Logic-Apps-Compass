@@ -1,0 +1,15 @@
+{
+  "name": "Escolher processamento por valor",
+  "definition": {
+    "triggers": { "Receive_order": { "type": "Request", "kind": "Http", "inputs": { "schema": { "type": "object", "properties": { "amount": { "type": "number" } }, "required": ["amount"] } } } },
+    "actions": {
+      "Check_order_amount": {
+        "type": "If", "expression": { "and": [{ "greater": ["@triggerBody()?['amount']", 1000] }] }, "runAfter": {},
+        "actions": { "Describe_review": { "type": "Compose", "inputs": "Pedido encaminhado para revisão", "runAfter": {} } },
+        "else": { "actions": { "Describe_review": { "type": "Compose", "inputs": "Pedido aprovado para processamento", "runAfter": {} } } }
+      },
+      "Acknowledge_order": { "type": "Response", "kind": "Http", "inputs": { "statusCode": 202, "body": { "message": "Pedido recebido", "correlationId": "@workflow().run.name" } }, "runAfter": { "Check_order_amount": ["Succeeded"] } }
+    },
+    "parameters": {}, "outputs": {}
+  }
+}

@@ -1,0 +1,1 @@
+{"actionName":"Criar_pedido","outputs":{"statusCode":400,"body":{"error":{"code":"BadRequest","message":"O campo customerId é obrigatório."}}}}

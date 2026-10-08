@@ -1,0 +1,18 @@
+# Implementação backend de provedores gratuitos
+Leia AGENTS.md e o guia local de route handlers Next antes de alterar a rota. Propriedade exclusiva: src/lib/ai/types.ts, index.ts, providers.ts (ou novos arquivos de helpers nesse diretório), src/app/api/assistant/route.ts, tests/unit/ai.test.ts ou novo ai-free-providers.test.ts, tests/integration/assistant.test.ts. Não editar UI, env ou README. Sem Git, contas, chamadas reais, secrets ou subagents.
+
+Contrato obrigatório para integração com UI:
+- aiProviderIds = ["mock", "openrouter", "nvidia", "openai", "azure"] as const; AiProviderId; AiRequest.provider?: AiProviderId.
+- ProviderStatus inclui id: AiProviderId | null, provider:string, configured:boolean, mock:boolean. ProviderCatalog extends ProviderStatus { providers: ProviderStatus[] }.
+- getProviderStatus(selected?: AiProviderId), createAiProvider(selected?: AiProviderId), getProviderCatalog(): ProviderCatalog. Sem argumento mantém AI_PROVIDER/mock e alias azure-openai. GET devolve catálogo. POST aceita provider opcional enum e despacha por escolha; nunca fallback para outro provedor em erro; requests antigos continuam funcionando.
+- Exportar types/enum, OpenRouterAiProvider e NvidiaAiProvider no index. Nunca expor chaves ou endpoint privado em GET/respostas.
+
+OpenRouter: URL fixa https://openrouter.ai/api/v1/chat/completions, Bearer OPENROUTER_API_KEY, modelo env OPENROUTER_MODEL default openrouter/free. Permitir somente openrouter/free ou id válido provider/model:free; recusar ID pago na configuração E constructor antes de fetch. JSON messages [system instructions curadas, user pergunta/contexto sanitizados], stream:false,max_tokens:1800. Opcional X-OpenRouter-Title:Logic Apps Compass. Sem fallback pago ou retry automático. Fonte https://openrouter.ai/openrouter/free e https://openrouter.ai/docs/quickstart.
+
+NVIDIA: URL fixa https://integrate.api.nvidia.com/v1/chat/completions, Bearer NVIDIA_API_KEY, modelo env NVIDIA_MODEL default nvidia/nemotron-3-ultra-550b-a55b. JSON messages system/user, stream:false,max_tokens:1800, chat_template_kwargs:{enable_thinking:false}. Timeout default 60000ms para ambos novos providers, override timeoutMs para teste. Fonte https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b e https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-ultra-550b-a55b; modelo suporta PT-BR e toggle thinking. Gratuidade de avaliação sujeita limites; não tratar como ilimitada.
+
+Manter contracts OpenAI/Azure, instruções e base local curadas, server-only runtime guard, consentimento literal true, sanitização entrada/saída, whitelist de fontes, abort timeout, redirect:error/cache:no-store, sem log/eco de body de erro. Reusar infraestrutura comum com ResponsesProvider evitando duplicação significativa.
+Chat response como unknown: choices[0].message.content textual não vazio, finish_reason stop; rejeitar error, length, content_filter, tool_calls e respostas malformadas sem apresentar truncado como resposta válida. Não mostrar reasoning_content.
+
+Testes antes de código: observar falha dos novos contratos, então implementar e passar unitários/integração pertinentes. Cobrir endpoints/headers/bodysanitizado, defaults e escolha independente de AI_PROVIDER, modelo OpenRouter pago recusado sem fetch, catálogo sem secret, unknown provider400/semfetch, ausência de consentimento, timeout, erros429/401seguros, conteúdo inválido/parcial e fonte whitelist. Não repetir testes sem mudança/falha.
+Relatório em docs/free-provider-backend-report.md com arquivos, evidências red/green e limites; resposta curta com status e contagem de testes. No fim faça self-review. Agente principal fará UI, docs e verificação final.

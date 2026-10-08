@@ -1,0 +1,13 @@
+{
+  "name": "Processar com Try Catch Finally",
+  "definition": {
+    "parameters": { "serviceUrl": { "type": "String", "defaultValue": "https://example.com/api" } },
+    "triggers": { "Start_schedule": { "type": "Recurrence", "recurrence": { "frequency": "Day", "interval": 1, "timeZone": "E. South America Standard Time" } } },
+    "actions": {
+      "Try_process": { "type": "Scope", "runAfter": {}, "actions": { "Read_service": { "type": "Http", "inputs": { "method": "GET", "uri": "@parameters('serviceUrl')", "headers": { "x-correlation-id": "@workflow().run.name" }, "retryPolicy": { "type": "exponential", "count": 3, "interval": "PT10S", "minimumInterval": "PT5S", "maximumInterval": "PT1M" } }, "runAfter": {} } } },
+      "Catch_failure": { "type": "Scope", "runAfter": { "Try_process": ["Failed", "TimedOut"] }, "actions": { "Prepare_diagnostics": { "type": "Compose", "inputs": { "code": "PROCESSING_FAILED", "correlationId": "@workflow().run.name", "failedActions": "@result('Try_process')" }, "runAfter": {} } } },
+      "Finally_complete": { "type": "Scope", "runAfter": { "Catch_failure": ["Succeeded", "Failed", "Skipped", "TimedOut"] }, "actions": { "Record_completion": { "type": "Compose", "inputs": { "message": "Processamento encerrado", "correlationId": "@workflow().run.name" }, "runAfter": {} } } }
+    },
+    "outputs": {}
+  }
+}
