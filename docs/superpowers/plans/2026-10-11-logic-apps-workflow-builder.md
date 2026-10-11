@@ -85,11 +85,11 @@
 
 **Files:** `README.md`, `docs/architecture.md`, `docs/verification.md`, new `docs/workflow-builder.md`, and `PLANS.md`.
 
-- [ ] Document the supported Consumption subset, generated files, manual import/deployment responsibility, secure parameters, provider configuration, privacy boundary, validation limits, and excluded operations. Link only the official sources already in the approved spec or re-verify them before adding.
-- [ ] Update architecture and implementation ledger to reflect delivered behavior and actual test counts. Preserve prior history and mark any live authenticated-provider/Azure validation as unperformed unless it is actually run.
-- [ ] Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e -- --workers=1`, and `npm run build`; fix regressions and rerun every check affected by a fix.
-- [ ] Inspect the app at the six required widths, especially the consent preview and generated code/download view. Record real results and limitations in `docs/verification.md`.
-- [ ] Recheck `git status` and stage only feature-owned paths if making commits; leave the pre-existing `next-env.d.ts` edit untouched.
+- [x] Document the supported Consumption subset, generated files, manual import/deployment responsibility, secure parameters, provider configuration, privacy boundary, validation limits, and excluded operations. Link only the official sources already in the approved spec or re-verify them before adding.
+- [x] Update architecture and implementation ledger to reflect delivered behavior and actual test counts. Preserve prior history and mark any live authenticated-provider/Azure validation as unperformed unless it is actually run.
+- [x] Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e -- --workers=1`, and `npm run build`; fix regressions and rerun every check affected by a fix.
+- [x] Inspect the app at the six required widths, especially the consent preview and generated code/download view. Record real results and limitations in `docs/verification.md`.
+- [x] Recheck `git status` and stage only feature-owned paths if making commits; leave the pre-existing `next-env.d.ts` edit untouched.
 
 ## Interface review before implementation
 

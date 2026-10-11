@@ -73,7 +73,7 @@ Pedido: iniciar pelas melhorias de qualidade com verificações automáticas em 
 Verificação executada pelo GitHub em `main`, commit `4212bc3`: lint, typecheck, 200 testes unitários/integração, 36 testes Playwright/Chromium e build de produção, todos aprovados. Nenhum segredo foi usado.
 
 ## Estado da entrega
-Implementado: domínio local, quatro jornadas, grafo, Doctor, sanitização/consentimento, wizard, trilha, conhecimento, templates e providers.
+Implementado: domínio local, quatro jornadas, grafo, Doctor, sanitização/consentimento, wizard, construtor de workflows Consumption, trilha, conhecimento, templates e providers.
 Parcialmente verificado: OpenAI/Azure com conta real e browsers além de Chromium; não havia credenciais nem chamadas externas autorizadas para essa validação.
 Backlog: controles corporativos ao expor na rede, autenticação, rate limit distribuído, múltiplos workflows por arquivo, demais exclusões em docs/backlog.md.
 Task 5: complete — instalação limpa npm ci, lint sem erros/avisos, TypeScript strict, 138 testes em 9 arquivos, 24 testes de interface contra produção e build de produção passaram. Audit: zero vulnerabilidades. Servidor de produção iniciado em http://127.0.0.1:3000; solicitado preview no painel do Codex.
@@ -99,3 +99,16 @@ Arquivos do backend: src/lib/ai/{types,index,providers}.ts, src/app/api/assistan
 Ruling: continuar sem novos gates de aprovação — pedido explícito de implementar e continuar; nenhum segredo disponível nem criação de conta necessária para entregar a integração. Validação autenticada permanece pendente até configuração de chave.
 Implementação: 62 novos testes unitários/integração e 12 novos E2E; 200/200 e 36/36 passaram. RED de interface confirmado na ausência do seletor. Um teste novo assumia modo Explain na home (que inicia Teach); corrigido para selecionar explicitamente Explain. Build, lint e tipos passaram; GET real confirmou o catálogo seguro. Capturas do assistente com ajuda NVIDIA em 320 e 1440 px inspecionadas. Nenhuma dependência mudou. Servidor de produção iniciado em http://127.0.0.1:3000.
 Task 6: complete — revisão independente aprovada sem achados bloqueadores e 82 testes de contratos executados pelo revisor. Guias, env de exemplo e evidências atualizados. Sem chaves, chamadas autenticadas, criação de conta ou mudanças no Azure.
+
+## Task 8: Construtor de workflows em linguagem natural (11/10/2026)
+
+Decisão: adicionar a jornada Consumption ao “Quero criar” sem substituir a proposta local. O MVP gera um plano JSON validado para gatilho `Request`/`Recurrence` e actions HTTP/Compose/Response; não permite que o modelo escreva WDL ou ARM diretamente.
+
+- [x] Definir schema, limites, validações semânticas, geração WDL/ARM e validação local dos artefatos.
+- [x] Criar `POST /api/workflow-builder` com consentimento estrito, sanitização, provedor real configurado, perfil de prompt fixo e validação de resposta `unknown`.
+- [x] Integrar seleção de jornada, prévia editável da pergunta e contexto, autorização por envio, revisão/confirmação do plano e downloads após validação.
+- [x] Preservar a proposta local e documentar limites, privacidade, configuração de provedores e referências oficiais em [docs/workflow-builder.md](docs/workflow-builder.md).
+- [x] Verificar lint, TypeScript, testes, E2E em seis larguras e build; registrar evidências em [docs/verification.md](docs/verification.md).
+
+Implementação em commits locais `535ff85`, `31d890a`, `652114c` e `c3bcb79`. Verificação: 272 testes unitários/integração em 15 arquivos e 48 testes E2E passaram; lint, typecheck e build passaram. E2E conferiu seleção, prévia, plano e código gerado em 320, 360, 390, 768, 1024 e 1440 px. Não foram usadas chaves reais nem executadas chamadas autenticadas, validações de endpoint ou implantações Azure.
+Ruling: endpoint do plano é exibido para conferência humana; HTTPS e formato do contrato são verificados localmente, mas a conectividade, propriedade e compatibilidade real da API não são inferidas.

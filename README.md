@@ -24,7 +24,7 @@ npm start
 
 Next.js 16.4.0 App Router, React 19.3.0, TypeScript strict, Tailwind CSS 4, primitives acessíveis Radix, Lucide, React Flow, Zod, Vitest e Playwright. Componentes compartilhados seguem o padrão de composição de shadcn/ui, usando Radix diretamente. `package-lock.json` fixa a instalação com npm.
 
-As análises determinísticas acontecem no navegador, com funções puras separadas da interface. Não há banco, login ou operações Azure. A rota de IA é server-side; valida consentimento e limites e repete a sanitização. O navegador armazena somente os IDs de aulas concluídas, nunca workflows ou erros. Veja [arquitetura](docs/architecture.md), [regras](docs/analysis-rules.md) e [privacidade](docs/privacy.md).
+As análises determinísticas acontecem no navegador, com funções puras separadas da interface. Não há banco, login ou operações Azure. As rotas de IA são server-side; validam consentimento e limites e repetem a sanitização. O navegador mantém o rascunho do construtor em memória, sem persistir workflows ou conversas. Veja [arquitetura](docs/architecture.md), [regras](docs/analysis-rules.md), [privacidade](docs/privacy.md) e [guia do construtor](docs/workflow-builder.md).
 
 ## Funcionalidades implementadas
 
@@ -36,6 +36,7 @@ As análises determinísticas acontecem no navegador, com funções puras separa
 - Sanitização de segredos e PII opcional; prévia revisável e envio explícito por solicitação.
 - Seletor de IA com OpenRouter gratuito e NVIDIA Build para avaliação; demonstração local disponível sem chave.
 - Wizard de 13 perguntas com proposta determinística, hosting qualificado, dúvidas, retry, segurança, monitoramento, idempotência e checklist.
+- Construtor em linguagem natural para Logic Apps Consumption: prévia sanitizada e editável, consentimento por envio, revisão de gatilho/endpoint/método/contratos e geração local de `workflow.json`, `azuredeploy.json` e `README.md` após confirmação e validação.
 - 18 documentos oficiais locais, 13 aulas com exercícios e respostas, progresso local e oito templates educacionais completos.
 - Layout responsivo, menu móvel, sidebar recolhível, diálogo acessível do assistente, teclado, foco visível e redução de movimento.
 
@@ -84,6 +85,8 @@ Resultado atualizado em 07/10/2026 após integração dos provedores gratuitos: 
 
 O lint usa ESLint, TypeScript, React Hooks e JSX a11y diretamente. Foi removida a configuração agregada do Next que introduzia uma dependência transitiva de desenvolvimento com advisory sem versão corrigida disponível; o código do Next e a stack da aplicação foram preservados.
 
+Verificação do construtor, em 11/10/2026: `npm run lint`, `npm run typecheck`, `npm test` (272 testes em 15 arquivos), `npm run test:e2e -- --workers=1` (48 cenários em Chromium) e `npm run build` passaram. E2E verificou seleção, prévia, plano e pacote gerado sem overflow em 320, 360, 390, 768, 1024 e 1440 px. Os testes de provedores usam respostas controladas; não houve chamada autenticada externa nem implantação Azure. Detalhes em [docs/verification.md](docs/verification.md).
+
 ## Estrutura principal
 
 ```text
@@ -110,7 +113,8 @@ tests/fixtures            workflows e erros sintéticos
 - Entrada até 2 MiB; parser representa até 1.500 etapas e 32 níveis. Ao limitar ou ignorar estruturas inválidas, indica análise parcial. Doctor e engine também têm limites de inspeção documentados.
 - Assistente: pergunta até 6.000 caracteres, contexto até 100.000 caracteres, body até 350.000 bytes; timeout de 60 segundos para OpenRouter/NVIDIA e 20 segundos para OpenAI/Azure. Para workflows grandes, envie uma action selecionada ou omita o contexto.
 - Redaction baseada em padrões pode não detectar todo dado confidencial; a prévia exige revisão humana. Nomes de recursos e regras de negócio também podem ser sensíveis.
-- Fontes são curadas localmente com data de verificação. IA não faz pesquisa ao vivo e deve declarar informações não verificadas; URLs não curadas sugeridas pelo modelo são ocultadas.
+- Fontes são curadas localmente com data de verificação. IA não faz pesquisa ao vivo e deve declarar informações não verificadas; URLs não curadas no assistente educacional são ocultadas. No construtor, endpoints do plano são exibidos como não verificados para revisão humana.
+- O construtor cobre somente `Request`/`Recurrence` e actions `Http`, `Compose` e `Response`, com referências e contratos JSON limitados. Não gera conectores gerenciados ou fluxos de controle, não testa endpoints/credenciais e não implanta. A validação local não comprova que o Azure ou a API de destino aceitarão o pacote. Consulte [limites e passos de revisão](docs/workflow-builder.md).
 - Templates de fila e arquivo simulam a entrada com Request; descrevem a substituição por trigger/conexão reais no designer. Nenhum template é um pacote implantável sem ajustes.
 - Progresso é por navegador. Sem controle de acesso corporativo ou rate limit distribuído; avaliar ambos antes de expor o serviço a uma equipe pela rede.
 - Testes de interface foram executados em Chromium. Outros browsers e auditoria com leitores de tela estão no backlog.

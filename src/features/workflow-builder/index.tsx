@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { ArrowLeft, Download, ShieldCheck } from 'lucide-react';
-import { aiProviderIds, type AiProviderId } from '@/lib/ai';
+import { aiProviderIds, type AiProviderId } from '@/lib/ai/types';
 import { redactContent } from '@/lib/security/redaction';
 import { generateWorkflowArtifacts, WorkflowGenerationError } from '@/lib/workflow-builder/generate';
 import { workflowBuilderResultSchema } from '@/lib/workflow-builder/schema';

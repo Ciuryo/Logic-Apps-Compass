@@ -46,3 +46,23 @@ Implementados OpenRouter e NVIDIA Build, catálogo público de configuração, s
 - Não houve mudança de dependências; audit zero e instalação limpa continuam como evidências da entrega inicial, sem novo audit necessário neste escopo.
 
 Modelos/termos foram consultados em fontes oficiais em 07/10/2026. Disponibilidade e limites da conta, validade de chave, qualidade do modelo e compatibilidade do toggle de raciocínio NVIDIA no serviço hospedado permanecem sem validação autenticada. Guia: [ativação](free-ai-providers.md). Revisão: [provedores gratuitos](free-provider-review.md).
+
+## Atualização: construtor de workflows — 11/10/2026
+
+Verificação final local para o construtor em linguagem natural de Logic Apps Consumption. Ambiente: Windows, Node 22.22.3, npm 10.9.8, Next.js 16.4.0 e Chromium.
+
+| Comando | Resultado |
+| --- | --- |
+| `npm run lint` | Exit 0, sem erros ou avisos. |
+| `npm run typecheck` | Exit 0. |
+| `npm test` | 272 testes em 15 arquivos, todos passaram. |
+| `npm run test:e2e -- --workers=1` | 48 testes Chromium, todos passaram. |
+| `npm run build` | Exit 0; `/` estática e as rotas `/api/assistant` e `/api/workflow-builder` dinâmicas. |
+
+Os testes E2E confirmam a escolha entre a proposta local e o construtor; orientação sem provedor ou com Mock; prévia editável e invalidada ao editar/trocar provedor; contexto anterior visível; autorização de uso único; ciclo `needs-input`/`ready`; bloqueio de resposta incompatível; revisão e confirmação do plano; validação, prévia e download de `azuredeploy.json` e `README.md`. As verificações de overflow passaram em 320, 360, 390, 768, 1024 e 1440 px para seleção, prévia, plano e artefatos, incluindo o bloco de código. Foco por teclado e labels acessíveis foram exercitados.
+
+Inspeção visual das telas de consentimento e pacote em 320 e 1440 px. As telas ficaram em coluna em dispositivos estreitos, endpoints e JSON quebraram linha, e os links de download permaneceram utilizáveis. As larguras intermediárias foram cobertas pelos testes E2E.
+
+As respostas de IA do E2E e os contratos HTTP dos provedores são controlados pelos testes. Nenhuma chave real foi usada; não houve inferência autenticada, teste de endpoint fornecido, validação no portal/ARM, importação ou execução de workflow no Azure. A validação local cobre apenas o subconjunto implementado e não prova que o runtime aceitará um pacote específico. Nenhuma dependência mudou nesta etapa; o audit não foi repetido. A alteração preexistente de `next-env.d.ts` permaneceu fora dos commits.
+
+Fontes oficiais usadas para documentar o artefato: [referência do recurso Microsoft.Logic/workflows](https://learn.microsoft.com/en-us/azure/templates/microsoft.logic/workflows), [quickstart Consumption com ARM](https://learn.microsoft.com/en-us/azure/logic-apps/quickstart-create-deploy-azure-resource-manager-template), [parâmetros de workflow](https://learn.microsoft.com/en-us/azure/logic-apps/create-parameters-workflows), [schema WDL](https://learn.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-schema) e [dados seguros no histórico](https://learn.microsoft.com/en-us/azure/logic-apps/set-up-security-permissions). Consulte também o [guia do construtor](workflow-builder.md).
