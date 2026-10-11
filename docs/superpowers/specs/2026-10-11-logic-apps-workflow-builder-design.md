@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-11
 
-**Status:** Aprovado em conversa; aguardando revisão deste documento antes do plano de implementação.
+**Status:** Especificação aprovada pelo usuário em 11/10/2026; plano de implementação preparado para revisão.
 
 ## Objetivo
 
