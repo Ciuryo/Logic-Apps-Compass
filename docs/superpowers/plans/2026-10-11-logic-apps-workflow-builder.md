@@ -75,11 +75,11 @@
 
 **Interfaces:** `WorkflowBuilder` reads the already-public catalog from `GET /api/assistant` and uses the new route. `ArchitectureWizard` initially renders two choices: the unchanged architecture proposal and the Consumption workflow builder; selecting the first enters the current wizard exactly as it does today. Builder state (conversation, preview, result, confirmation, artifacts) stays in React memory only. If no real provider is configured or Mock is selected, explain how to configure a provider and keep the architecture proposal available.
 
-- [ ] Add E2E tests for the choice screen and unchanged architecture path, plus no-configured-provider/Mock guidance while keeping the local proposal accessible. Observe failure before UI implementation.
-- [ ] Add E2E tests for drafting a message, sanitized preview editing, provider choice, no network send before consent, and preview invalidation after editing or changing provider.
-- [ ] Add E2E tests with intercepted route responses for `needs-input` followed by a new preview/consent turn, invalid result errors, `ready` summary, endpoint/method/contract review, explicit plan confirmation, generation, artifact preview, and `azuredeploy.json` / `README.md` download.
-- [ ] Implement accessible Portuguese UI with clear warnings not to enter secrets, concise pending questions, provider configuration guidance, blocking diagnostics, explicit plan confirmation, and downloadable files only after generated validation passes.
-- [ ] Verify keyboard focus and accessible labels; at widths 320, 360, 390, 768, 1024, and 1440 px test builder selection, preview, and result screens for horizontal overflow and usable controls.
+- [x] Add E2E tests for the choice screen and unchanged architecture path, plus no-configured-provider/Mock guidance while keeping the local proposal accessible. Observe failure before UI implementation.
+- [x] Add E2E tests for drafting a message, sanitized preview editing, provider choice, no network send before consent, and preview invalidation after editing or changing provider.
+- [x] Add E2E tests with intercepted route responses for `needs-input` followed by a new preview/consent turn, invalid result errors, `ready` summary, endpoint/method/contract review, explicit plan confirmation, generation, artifact preview, and `azuredeploy.json` / `README.md` download.
+- [x] Implement accessible Portuguese UI with clear warnings not to enter secrets, concise pending questions, provider configuration guidance, blocking diagnostics, explicit plan confirmation, and downloadable files only after generated validation passes.
+- [x] Verify keyboard focus and accessible labels; at widths 320, 360, 390, 768, 1024, and 1440 px test builder selection, preview, and result screens for horizontal overflow and usable controls.
 
 ## Task 5: Document limits and complete verification
 

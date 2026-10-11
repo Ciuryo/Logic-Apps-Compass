@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 test("wizard valida, recebe respostas e produz proposta completa", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /^Quero criar/ }).last().click();
+  await page.getByRole("button", { name: "Proposta de arquitetura", exact: true }).click();
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
   await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
   for (let stage = 0; stage < 4; stage += 1) {

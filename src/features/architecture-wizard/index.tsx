@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, Compass, Network, RotateCcw } from 'lucide-react';
 import { architectureQuestions, buildArchitectureProposal, type ArchitectureAnswers } from '@/lib/architecture';
 import { knowledgeLink } from '@/content/knowledge';
+import { WorkflowBuilder } from '@/features/workflow-builder';
 
 const stages = ['Cenário e entrada', 'Execução e rede', 'Ambiente e sistemas', 'Confiabilidade'];
 
 export function ArchitectureWizard() {
+  const [journey, setJourney] = useState<'choose' | 'architecture' | 'workflow'>('choose');
   const [answers, setAnswers] = useState<ArchitectureAnswers>({});
   const [stage, setStage] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -26,6 +28,25 @@ export function ArchitectureWizard() {
     if (stage === stages.length - 1) setShowResult(true);
     else setStage(stage + 1);
   }
+
+  if (journey === 'workflow') return <WorkflowBuilder onBack={() => setJourney('choose')} />;
+
+  if (journey === 'choose') return <section className="stack" aria-labelledby="architecture-title">
+    <div><p className="eyebrow">QUERO CRIAR</p><h1 id="architecture-title">Dê forma à sua integração</h1><p className="muted">Escolha como quer começar. Você pode explorar uma proposta local ou montar um pacote de Logic Apps Consumption.</p></div>
+    <div className="grid-two" aria-label="Escolha uma jornada">
+      <button className="panel stack" aria-label="Proposta de arquitetura" style={{ textAlign: 'left', gap: 9 }} onClick={() => setJourney('architecture')}>
+        <span className="eyebrow" style={{ marginBottom: 0 }}>PROPOSTA LOCAL</span>
+        <strong style={{ fontSize: 18 }}>Proposta de arquitetura</strong>
+        <span className="muted">Responda às perguntas e receba uma recomendação sem enviar dados para um provedor.</span>
+      </button>
+      <button className="panel stack" aria-label="Criar workflow Consumption" style={{ textAlign: 'left', gap: 9 }} onClick={() => setJourney('workflow')}>
+        <span className="eyebrow" style={{ marginBottom: 0 }}>CONSUMPTION</span>
+        <strong style={{ fontSize: 18 }}>Criar workflow Consumption</strong>
+        <span className="muted">Descreva a automação, revise cada envio e gere arquivos para revisar e importar manualmente.</span>
+      </button>
+    </div>
+    <p className="muted">A criação do pacote não implanta recursos Azure. Revise os contratos e parâmetros antes de importar.</p>
+  </section>;
 
   return <section className="stack" aria-labelledby="architecture-title">
     <div><p className="eyebrow">QUERO CRIAR</p><h1 id="architecture-title">Dê forma à sua integração</h1><p className="muted">13 perguntas simples. Uma proposta local para discutir com sua equipe.</p></div>
