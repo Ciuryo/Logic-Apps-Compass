@@ -51,11 +51,11 @@
 
 **Interfaces:** `generateWorkflowArtifacts(plan: WorkflowPlan): WorkflowBuilderArtifacts` returns `{ workflowDefinition: string, armTemplate: string, readme: string }`. It accepts only a plan that passes Task 1 validation. `validateGeneratedWorkflow(artifacts: WorkflowBuilderArtifacts): GeneratedWorkflowValidation` returns `{ valid: boolean, issues: Array<{ code: string, path: Array<string | number>, message: string }> }`, parses the WDL with `parseWorkflow` from the existing local parser, and applies explicit subset checks. Keep generated JSON deterministically formatted.
 
-- [ ] Write generator tests for Request→HTTP→Response and Recurrence→HTTP, action order and `runAfter`, JSON literals, typed trigger/prior-action references, and the exact Consumption `Microsoft.Logic/workflows` ARM envelope. Observe failure before implementation.
-- [ ] Write security tests for ARM/WDL parameter wiring, secure-string placeholders without defaults or values, HTTP Bearer/header auth, and hidden authenticated action inputs/outputs. Assert the generated output contains no credential values.
-- [ ] Implement local WDL/ARM/README generation using only fixed templates and validated plan fields. No model-authored WDL/ARM fragments or arbitrary expression strings are accepted.
-- [ ] Implement generated-artifact validation using `parseWorkflow` from `src/lib/logic-apps/parser` and semantic checks for the supported subset. Return actionable local diagnostics and do not describe this as full Azure validation.
-- [ ] Test that invalid plans throw or return blocking validation without partial artifacts, and that generation does not mutate the plan.
+- [x] Write generator tests for Request→HTTP→Response and Recurrence→HTTP, action order and `runAfter`, JSON literals, typed trigger/prior-action references, and the exact Consumption `Microsoft.Logic/workflows` ARM envelope. Observe failure before implementation.
+- [x] Write security tests for ARM/WDL parameter wiring, secure-string placeholders without defaults or values, HTTP Bearer/header auth, and hidden authenticated action inputs/outputs. Assert the generated output contains no credential values.
+- [x] Implement local WDL/ARM/README generation using only fixed templates and validated plan fields. No model-authored WDL/ARM fragments or arbitrary expression strings are accepted.
+- [x] Implement generated-artifact validation using `parseWorkflow` from `src/lib/logic-apps/parser` and semantic checks for the supported subset. Return actionable local diagnostics and do not describe this as full Azure validation.
+- [x] Test that invalid plans throw or return blocking validation without partial artifacts, and that generation does not mutate the plan.
 
 ## Task 3: Add the consent-gated workflow-builder API
 

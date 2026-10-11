@@ -41,6 +41,17 @@ export interface WorkflowPlanValidation {
   issues: WorkflowPlanValidationIssue[];
 }
 
+export interface WorkflowBuilderArtifacts {
+  workflowDefinition: string;
+  armTemplate: string;
+  readme: string;
+}
+
+export interface GeneratedWorkflowValidation {
+  valid: boolean;
+  issues: WorkflowPlanValidationIssue[];
+}
+
 export type WorkflowBuilderResult =
   | { status: "needs-input"; summary: string; questions: string[]; assumptions: string[]; unresolved: string[] }
   | { status: "ready"; summary: string; plan: WorkflowPlan; assumptions: string[]; warnings: string[] };

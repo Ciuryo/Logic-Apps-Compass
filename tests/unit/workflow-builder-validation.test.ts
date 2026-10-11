@@ -93,6 +93,45 @@ describe("workflow builder cross-field validation", () => {
     expect(validateWorkflowPlan(plan).issues.map(issue => issue.code)).toContain("response-requires-request-trigger");
   });
 
+  it("rejects Response status codes in the unsupported 1xx and 3xx ranges", async () => {
+    const { validateWorkflowPlan } = await loadValidation();
+    const plan = structuredClone(validPlan);
+    const response = plan.actions[1];
+    if (response?.kind !== "Response") throw new Error("Fixture must end with Response.");
+    response.statusCode = 302;
+
+    expect(validateWorkflowPlan(plan).issues.map(issue => issue.code)).toContain("invalid-response-status");
+  });
+
+  it("rejects case-colliding credential parameter names", async () => {
+    const { validateWorkflowPlan } = await loadValidation();
+    const plan = structuredClone(validPlan);
+    const firstAction = plan.actions[0];
+    if (firstAction?.kind !== "Http") throw new Error("Fixture must begin with HTTP.");
+    firstAction.authentication = { kind: "bearer", parameterName: "serviceToken" };
+    plan.actions.unshift({
+      kind: "Http",
+      name: "anotherCall",
+      method: "GET",
+      uri: "https://api.example.com/other",
+      headers: {},
+      authentication: { kind: "bearer", parameterName: "SERVICETOKEN" },
+    });
+
+    expect(validateWorkflowPlan(plan).issues.map(issue => issue.code)).toContain("ambiguous-credential-parameter");
+  });
+
+  it("rejects an authentication header duplicated in the regular header list", async () => {
+    const { validateWorkflowPlan } = await loadValidation();
+    const plan = structuredClone(validPlan);
+    const http = plan.actions[0];
+    if (http?.kind !== "Http") throw new Error("Fixture must begin with HTTP.");
+    http.headers = { "X-Client-Key": { kind: "literal", value: "ordinary" } };
+    http.authentication = { kind: "header", headerName: "x-client-key", parameterName: "serviceKey" };
+
+    expect(validateWorkflowPlan(plan).issues.map(issue => issue.code)).toContain("duplicate-authentication-header");
+  });
+
   it.each([
     ["unknown field", ["unknown"], "unknown-trigger-reference"],
     ["missing nested field", ["customer", "phone"], "unknown-trigger-reference"],

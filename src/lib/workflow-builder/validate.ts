@@ -90,6 +90,12 @@ export function validateWorkflowPlan(plan: WorkflowPlan): WorkflowPlanValidation
   if (responseIndexes.length === 1 && responseIndexes[0] !== normalizedPlan.actions.length - 1) {
     issues.push(issue("response-must-be-last", ["actions", responseIndexes[0]], "A action Response deve ser a última etapa do workflow."));
   }
+  for (const index of responseIndexes) {
+    const response = normalizedPlan.actions[index];
+    if (response?.kind === "Response" && !((response.statusCode >= 200 && response.statusCode < 300) || (response.statusCode >= 400 && response.statusCode <= 599))) {
+      issues.push(issue("invalid-response-status", ["actions", index, "statusCode"], "A action Response aceita códigos 2xx, 4xx ou 5xx."));
+    }
+  }
 
   function validateReference(value: WorkflowBuilderValue, actionIndex: number, path: Array<string | number>): void {
     if (value.kind !== "reference") return;
@@ -165,11 +171,23 @@ export function validateWorkflowPlan(plan: WorkflowPlan): WorkflowPlanValidation
     }
   }
 
+  const credentialParameterNames = new Map<string, string>();
   normalizedPlan.actions.forEach((action, index) => {
     validateActionValues(action, index);
     if (action.kind === "Http") {
       validateEndpoint(action, index);
       if (action.method === "GET" && action.body) issues.push(issue("get-request-has-body", ["actions", index, "body"], "A ação GET não pode enviar body neste MVP."));
+      const authentication = action.authentication;
+      if (authentication.kind !== "none") {
+        const parameterNameKey = authentication.parameterName.toLowerCase();
+        const existingParameterName = credentialParameterNames.get(parameterNameKey);
+        if (existingParameterName && existingParameterName !== authentication.parameterName) {
+          issues.push(issue("ambiguous-credential-parameter", ["actions", index, "authentication", "parameterName"], "Use o mesmo nome de parâmetro de credencial em todas as actions, incluindo a mesma capitalização."));
+        } else credentialParameterNames.set(parameterNameKey, authentication.parameterName);
+      }
+      if (authentication.kind === "header" && Object.keys(action.headers).some((name) => name.toLowerCase() === authentication.headerName.toLowerCase())) {
+        issues.push(issue("duplicate-authentication-header", ["actions", index, "authentication", "headerName"], "O header de autenticação não pode se repetir nos headers adicionais."));
+      }
     }
   });
 
