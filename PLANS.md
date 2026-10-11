@@ -69,7 +69,8 @@ Ruling: limitar contexto de IA em vez de truncar silenciosamente — usuário de
 Pedido: iniciar pelas melhorias de qualidade com verificações automáticas em GitHub.
 - [x] Workflow para push/PR em main e acionamento manual; npm ci, lint, typecheck, unit/integration, Playwright Chromium e build.
 - [x] Permissões mínimas de leitura, Node.js 22, cache npm, cancelamento de execuções redundantes.
-Comando local para validar: não executado nesta tarefa; o primeiro resultado será a execução automática no GitHub após o push.
+- [x] Primeira execução automática: [GitHub Actions #38150255274](https://github.com/Ciuryo/Logic-Apps-Compass/actions/runs/38150255274) concluída com sucesso em 11/10/2026.
+Verificação executada pelo GitHub em `main`, commit `4212bc3`: lint, typecheck, 200 testes unitários/integração, 36 testes Playwright/Chromium e build de produção, todos aprovados. Nenhum segredo foi usado.
 
 ## Estado da entrega
 Implementado: domínio local, quatro jornadas, grafo, Doctor, sanitização/consentimento, wizard, trilha, conhecimento, templates e providers.
