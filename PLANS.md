@@ -65,6 +65,12 @@ Ruling: usar Radix diretamente com composição acessível, sem dependência sha
 Ruling: substituir eslint-config-next por ESLint/TypeScript/React Hooks/JSX a11y — elimina advisory transitivo de desenvolvimento sem correção disponível, preserva lint e stack Next.
 Ruling: limitar contexto de IA em vez de truncar silenciosamente — usuário deve selecionar uma action ou desmarcar payload grande — mantém prévia fiel ao envio.
 
+## Task 7: GitHub Actions CI (11/10/2026)
+Pedido: iniciar pelas melhorias de qualidade com verificações automáticas em GitHub.
+- [x] Workflow para push/PR em main e acionamento manual; npm ci, lint, typecheck, unit/integration, Playwright Chromium e build.
+- [x] Permissões mínimas de leitura, Node.js 22, cache npm, cancelamento de execuções redundantes.
+Comando local para validar: não executado nesta tarefa; o primeiro resultado será a execução automática no GitHub após o push.
+
 ## Estado da entrega
 Implementado: domínio local, quatro jornadas, grafo, Doctor, sanitização/consentimento, wizard, trilha, conhecimento, templates e providers.
 Parcialmente verificado: OpenAI/Azure com conta real e browsers além de Chromium; não havia credenciais nem chamadas externas autorizadas para essa validação.

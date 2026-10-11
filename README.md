@@ -78,6 +78,8 @@ npm audit
 
 Playwright inicia o servidor de desenvolvimento automaticamente quando não houver um disponível. Para verificação contra produção, execute o build e `npm start` antes de rodar os testes. No CI, a configuração inicia um servidor próprio. Relatório HTML: `playwright-report/index.html`; traces das falhas: `test-results/`. Testes de interface verificam upload, exemplos, paste, JSON inválido, grafo, detalhes, filtros, Doctor, privacidade, wizard, progresso, templates e seis larguras: 320, 360, 390, 768, 1024 e 1440 px.
 
+O GitHub Actions roda lint, TypeScript, testes unitários/de integração, Playwright com Chromium e build em pushes para `main`, pull requests para `main` e execução manual. O fluxo usa Node.js 22, cache npm e permissões de leitura do repositório.
+
 Resultado atualizado em 07/10/2026 após integração dos provedores gratuitos: lint, typecheck e build aprovados; **200 testes unitários/integração e 36 testes de interface passaram**, estes contra produção. Instalação limpa e audit com zero vulnerabilidades foram verificados na entrega inicial; nenhuma dependência mudou nesta atualização. [Registro de verificação](docs/verification.md), [revisão inicial](docs/review-report.md) e [revisão dos provedores gratuitos](docs/free-provider-review.md).
 
 O lint usa ESLint, TypeScript, React Hooks e JSX a11y diretamente. Foi removida a configuração agregada do Next que introduzia uma dependência transitiva de desenvolvimento com advisory sem versão corrigida disponível; o código do Next e a stack da aplicação foram preservados.
