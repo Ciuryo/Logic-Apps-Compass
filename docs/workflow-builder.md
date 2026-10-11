@@ -6,7 +6,7 @@ O construtor fica em **Quero criar** e gera um pacote inicial para Azure Logic A
 
 Escolha **Criar workflow Consumption**. A proposta de arquitetura determinística continua disponível na outra opção e funciona sem provedor de IA.
 
-Selecione um provedor real configurado no servidor. O modo Mock serve apenas como demonstração e não monta planos personalizados. OpenRouter usa um modelo gratuito configurado; NVIDIA Build é uma opção de avaliação sujeita a disponibilidade e limites. Consulte [como configurar provedores de IA](free-ai-providers.md).
+Selecione um provedor real configurado no servidor. O modo Mock serve apenas como demonstração e não monta planos personalizados. OpenRouter usa um modelo gratuito configurado; NVIDIA Build é uma opção de avaliação sujeita a disponibilidade e limites. OpenAI oferece GPT-6 Luna pela API paga por uso, sem nível gratuito para esse modelo. Veja [como configurar OpenAI GPT-6 Luna](openai-gpt-6-luna.md) e [como configurar provedores gratuitos](free-ai-providers.md).
 
 Escreva o pedido e escolha **Preparar prévia**. Essa etapa é local: aplica a sanitização, não faz chamada de rede. Revise e, se necessário, edite a prévia da pergunta e o contexto anterior que será enviado. O contexto de uma conversa adicional também é mostrado e editável. Alterar a pergunta original ou o provedor invalida a prévia. Para cada envio, marque a autorização explícita; a autorização é consumida naquele envio e precisa ser dada novamente após erro ou ao preparar outro turno. Conversa, prévia e plano ficam somente na memória da página, sem persistência.
 

@@ -3,10 +3,11 @@ import { buildWorkflowBuilderPrompt } from "@/lib/workflow-builder/prompt";
 import type { AiProvider, AiRequest, AiResponse } from "./types";
 import { curatedKnowledgeDocuments, curatedSources } from "./sources";
 
-export interface OpenAiConfiguration { apiKey: string; model: string; timeoutMs?: number }
+export interface OpenAiConfiguration { apiKey: string; model?: string; timeoutMs?: number }
 export interface AzureOpenAiConfiguration { apiKey: string; endpoint: string; deployment: string; timeoutMs?: number }
 export interface ChatAiConfiguration { apiKey: string; model?: string; timeoutMs?: number }
 export const defaultOpenRouterModel = "openrouter/free";
+export const defaultOpenAiModel = "gpt-6-luna";
 const defaultNvidiaModel = "nvidia/nemotron-3-ultra-550b-a55b";
 export function isFreeOpenRouterModel(model: string): boolean {
   return model === defaultOpenRouterModel || /^[a-zA-Z0-9][a-zA-Z0-9._-]*\/[a-zA-Z0-9][a-zA-Z0-9._-]*:free$/.test(model);
@@ -166,7 +167,7 @@ export class OpenAiProvider extends ResponsesProvider {
   protected timeoutMs: number;
   constructor(configuration: OpenAiConfiguration) {
     super();
-    this.model = configuration.model;
+    this.model = configuration.model?.trim() || defaultOpenAiModel;
     this.headers = { Authorization: `Bearer ${configuration.apiKey}` };
     this.timeoutMs = configuration.timeoutMs ?? 20000;
   }

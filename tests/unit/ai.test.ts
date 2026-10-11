@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MockAiProvider, OpenAiProvider, AzureOpenAiProvider, getProviderStatus, type AiRequest } from "@/lib/ai";
+import { MockAiProvider, OpenAiProvider, AzureOpenAiProvider, createAiProvider, getProviderStatus, type AiRequest } from "@/lib/ai";
 import { uniqueReferences, verifiedKnowledgeDocuments } from "@/lib/ai/sources";
 
 const request: AiRequest = { mode: "Explain", message: "Explique esta etapa", context: "{}", consent: true };
@@ -20,9 +20,16 @@ describe("provedores de IA", () => {
     const result = await new MockAiProvider().sendMessage(request);
     expect(result.mock).toBe(true); expect(result.answer).toMatch(/simulad|local/i); expect(fetchSpy).not.toHaveBeenCalled();
   });
-  it("sem modelo explícito o provedor real não é configurado", () => {
+  it("usa GPT-6 Luna quando só a chave OpenAI está configurada", async () => {
     vi.stubEnv("AI_PROVIDER", "openai"); vi.stubEnv("OPENAI_API_KEY", "fake-server-secret"); vi.stubEnv("OPENAI_MODEL", "");
-    expect(getProviderStatus()).toMatchObject({ provider: "OpenAI", configured: false, mock: false });
+    const fetchSpy = vi.fn(async () => Response.json({ output: [{ type: "message", content: [{ type: "output_text", text: "Resposta Luna" }] }] }));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    expect(getProviderStatus()).toMatchObject({ id: "openai", provider: "OpenAI", configured: true, mock: false });
+    await createAiProvider().sendMessage(request);
+
+    const [, options] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    expect(JSON.parse(String(options.body))).toMatchObject({ model: "gpt-6-luna", store: false });
   });
   it("OpenAI envia Responses sem storage e sanitiza mensagem e contexto", async () => {
     const fetchSpy = vi.fn(async () => Response.json({ output: [{ type: "message", content: [{ type: "output_text", text: "Resposta verificada" }] }] }));

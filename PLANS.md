@@ -112,3 +112,14 @@ Decisão: adicionar a jornada Consumption ao “Quero criar” sem substituir a 
 
 Implementação em commits locais `535ff85`, `31d890a`, `652114c` e `c3bcb79`. Verificação: 272 testes unitários/integração em 15 arquivos e 48 testes E2E passaram; lint, typecheck e build passaram. E2E conferiu seleção, prévia, plano e código gerado em 320, 360, 390, 768, 1024 e 1440 px. Não foram usadas chaves reais nem executadas chamadas autenticadas, validações de endpoint ou implantações Azure.
 Ruling: endpoint do plano é exibido para conferência humana; HTTPS e formato do contrato são verificados localmente, mas a conectividade, propriedade e compatibilidade real da API não são inferidas.
+
+## Task 9: OpenAI GPT-6 Luna — 11/10/2026
+
+Pedido: disponibilizar o modelo Luna 6 no assistente especializado e no construtor de workflows.
+
+- [x] Testar chave OpenAI sem `OPENAI_MODEL` e confirmar o envio do identificador `gpt-6-luna`.
+- [x] Usar GPT-6 Luna como modelo padrão do provedor OpenAI, mantendo a chave no servidor e sem fallback.
+- [x] Mostrar a configuração e os preços nos dois seletores; documentar cobrança por uso e ausência de nível gratuito para esse modelo.
+- [x] Verificar consentimento existente, lint, tipos, testes, E2E responsivo, build e catálogo público.
+
+Verificação: 273 testes unitários/integração em 15 arquivos, 50 E2E em Chromium, lint, typecheck e build passaram. Ajuda do provedor inspecionada em 320 e 1440 px; o catálogo público não expõe chaves. OpenAI Docs consultada em 11/10/2026 confirma endpoint Responses, cobrança por tokens e ausência de nível gratuito. Nenhuma chave ou inferência autenticada foi usada. A chave deve ser configurada pelo usuário em `.env.local`; veja [docs/openai-gpt-6-luna.md](docs/openai-gpt-6-luna.md).

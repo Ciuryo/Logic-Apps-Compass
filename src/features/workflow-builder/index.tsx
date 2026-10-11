@@ -22,11 +22,11 @@ const responseSchema = z.strictObject({ result: workflowBuilderResultSchema, pro
 const errorSchema = z.strictObject({ error: z.string().min(1).max(500) });
 type ProviderStatus = z.infer<typeof providerStatusSchema>;
 
-const providerSetup: Record<AiProviderId, { keyUrl: string; variables: string; description: string }> = {
+const providerSetup: Record<AiProviderId, { keyUrl: string; variables: string; description: string; pricingUrl?: string }> = {
   mock: { keyUrl: '', variables: '', description: 'O modo local não gera planos personalizados.' },
   openrouter: { keyUrl: 'https://openrouter.ai/settings/keys', variables: 'OPENROUTER_API_KEY=sua_chave\nOPENROUTER_MODEL=openrouter/free', description: 'Somente modelos gratuitos são aceitos; disponibilidade e limites dependem do provedor.' },
   nvidia: { keyUrl: 'https://build.nvidia.com/settings/api-keys', variables: 'NVIDIA_API_KEY=sua_chave\nNVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b', description: 'Acesso de avaliação sujeito à disponibilidade do modelo e aos limites da conta NVIDIA.' },
-  openai: { keyUrl: 'https://platform.openai.com/api-keys', variables: 'OPENAI_API_KEY=sua_chave\nOPENAI_MODEL=seu_modelo', description: 'O uso depende da configuração e da cobrança da conta.' },
+  openai: { keyUrl: 'https://platform.openai.com/api-keys', pricingUrl: 'https://developers.openai.com/api/docs/pricing', variables: 'OPENAI_API_KEY=sua_chave\nOPENAI_MODEL=gpt-6-luna', description: 'A API é cobrada por uso; o nível gratuito não está disponível para esse modelo.' },
   azure: { keyUrl: 'https://portal.azure.com/', variables: 'AZURE_OPENAI_ENDPOINT=seu_endpoint\nAZURE_OPENAI_API_KEY=sua_chave\nAZURE_OPENAI_DEPLOYMENT=seu_deployment', description: 'O uso depende do deployment e da configuração Azure da sua organização.' },
 };
 
@@ -34,7 +34,7 @@ const providerLabels: Record<AiProviderId, string> = {
   mock: 'Modo local (sem IA personalizada)',
   openrouter: 'OpenRouter · gratuito',
   nvidia: 'NVIDIA Build · avaliação',
-  openai: 'OpenAI',
+  openai: 'OpenAI · GPT-6 Luna (padrão, pago)',
   azure: 'Azure OpenAI',
 };
 
@@ -220,6 +220,7 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
         <summary>Como configurar {providerLabels[provider]}</summary>
         <div className="stack" style={{ gap: 9, marginTop: 12 }}>
           {selectedSetup.keyUrl && <a href={selectedSetup.keyUrl} target="_blank" rel="noreferrer">Criar chave no provedor</a>}
+          {selectedSetup.pricingUrl && <a href={selectedSetup.pricingUrl} target="_blank" rel="noreferrer">Consultar preços da API</a>}
           <p>Guarde as configurações no ambiente do servidor e reinicie a aplicação:</p>
           <pre className="workflow-code-preview"><code>{selectedSetup.variables}</code></pre>
           <p>{selectedSetup.description}</p>

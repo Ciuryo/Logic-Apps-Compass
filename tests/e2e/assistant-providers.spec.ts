@@ -72,6 +72,19 @@ test("troca de provedor invalida prévia e exige nova revisão", async ({ page }
   await expect(page.getByRole("button", { name: "Enviar conteúdo sanitizado" })).toHaveCount(0);
 });
 
+test("OpenAI identifica GPT-6 Luna e mostra como ativar a API", async ({ page }) => {
+  await openAssistant(page);
+  const selector = page.getByLabel("Provedor de IA");
+  await selector.selectOption("openai");
+  await expect(selector.locator('option[value="openai"]')).toHaveText("OpenAI · GPT-6 Luna (padrão, pago)");
+  await expect(page.getByText(/API.*cobrada por uso/i).first()).toBeVisible();
+  await expect(page.getByText(/nível gratuito não está disponível/i).first()).toBeVisible();
+  await page.getByText("Como ativar este provedor", { exact: true }).click();
+  await expect(page.getByTestId("provider-setup")).toContainText("OPENAI_API_KEY");
+  await expect(page.getByTestId("provider-setup")).toContainText("gpt-6-luna");
+  await expect(page.getByRole("link", { name: "Consultar preços da API" })).toHaveAttribute("href", "https://developers.openai.com/api/docs/pricing");
+});
+
 test("falha de status mantém envio bloqueado", async ({ page }) => {
   await page.route("**/api/assistant", (route) => route.fulfill({ status: 503, json: { error: "Indisponível" } }));
   await page.goto("/");
@@ -82,7 +95,7 @@ test("falha de status mantém envio bloqueado", async ({ page }) => {
 });
 
 for (const width of [320, 360, 390, 768, 1024, 1440]) {
-  test(`ajuda NVIDIA legível sem overflow em ${width}px`, async ({ page }) => {
+  test(`ajuda NVIDIA e OpenAI legível sem overflow em ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await openAssistant(page);
     await page.getByLabel("Provedor de IA").selectOption("nvidia");
@@ -91,5 +104,13 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
     expect(await page.locator(".assistant-body").evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(false);
     if (width === 320 || width === 1440) await page.screenshot({ path: `test-results/assistant-nvidia-${width}.png`, fullPage: true });
+
+    await page.getByLabel("Provedor de IA").selectOption("openai");
+    await page.getByText("Como ativar este provedor", { exact: true }).click();
+    await expect(page.getByTestId("provider-setup")).toContainText("gpt-6-luna");
+    await expect(page.getByTestId("provider-setup")).toContainText("não está disponível");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+    expect(await page.locator(".assistant-body").evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(false);
+    if (width === 320 || width === 1440) await page.screenshot({ path: `test-results/assistant-openai-${width}.png`, fullPage: true });
   });
 }

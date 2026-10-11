@@ -125,6 +125,19 @@ describe("workflow builder consent-gated API", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("uses GPT-6 Luna by default with only the OpenAI API key configured", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "server-provider-secret"); vi.stubEnv("OPENAI_MODEL", "");
+    const fetchSpy = vi.fn(async () => Response.json(answerPayload(JSON.stringify(readyResult))));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const response = await post(requestBody());
+
+    expect(response.status).toBe(200);
+    const [url, options] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://api.openai.com/v1/responses");
+    expect(JSON.parse(String(options.body))).toMatchObject({ model: "gpt-6-luna", store: false });
+  });
+
   it("blocks oversized content even when Content-Length is missing", async () => {
     const fetchSpy = vi.fn(); vi.stubGlobal("fetch", fetchSpy);
     const response = await postRaw("x".repeat(350001));

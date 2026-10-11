@@ -66,3 +66,13 @@ Inspeção visual das telas de consentimento e pacote em 320 e 1440 px. As telas
 As respostas de IA do E2E e os contratos HTTP dos provedores são controlados pelos testes. Nenhuma chave real foi usada; não houve inferência autenticada, teste de endpoint fornecido, validação no portal/ARM, importação ou execução de workflow no Azure. A validação local cobre apenas o subconjunto implementado e não prova que o runtime aceitará um pacote específico. Nenhuma dependência mudou nesta etapa; o audit não foi repetido. A alteração preexistente de `next-env.d.ts` permaneceu fora dos commits.
 
 Fontes oficiais usadas para documentar o artefato: [referência do recurso Microsoft.Logic/workflows](https://learn.microsoft.com/en-us/azure/templates/microsoft.logic/workflows), [quickstart Consumption com ARM](https://learn.microsoft.com/en-us/azure/logic-apps/quickstart-create-deploy-azure-resource-manager-template), [parâmetros de workflow](https://learn.microsoft.com/en-us/azure/logic-apps/create-parameters-workflows), [schema WDL](https://learn.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-schema) e [dados seguros no histórico](https://learn.microsoft.com/en-us/azure/logic-apps/set-up-security-permissions). Consulte também o [guia do construtor](workflow-builder.md).
+
+## Atualização: OpenAI GPT-6 Luna — 11/10/2026
+
+O provedor OpenAI existente agora usa `gpt-6-luna` como padrão. Basta configurar `OPENAI_API_KEY`; `OPENAI_MODEL` continua opcional para manter compatibilidade com contas que habilitaram outro modelo. Os seletores do assistente e do construtor informam cobrança por uso e ausência de nível gratuito. Referências oficiais: [modelo e limites](https://developers.openai.com/api/docs/models/gpt-6-luna) e [preços](https://developers.openai.com/api/docs/pricing).
+
+- `npm run lint`, `npm run typecheck`, `npm test` (273 testes em 15 arquivos) e `npm run build`: passaram.
+- `npm run test:e2e -- --workers=1`: 50 testes passaram contra produção. Seleção, chave e preços foram conferidos no assistente e no construtor; a ajuda OpenAI foi verificada em 320, 360, 390, 768, 1024 e 1440 px.
+- Inspeção visual das capturas de configuração em 320 e 1440 px: texto e campos legíveis, sem overflow horizontal.
+- GET de `/api/assistant` retornou HTTP 200 e somente o catálogo público; OpenAI aparece desconfigurado sem chave e nenhum segredo é exposto. A página local permanece disponível em http://127.0.0.1:3000.
+- Nenhuma chave real foi usada e não houve chamada autenticada. A integração foi verificada por contrato controlado; acesso, cobrança da conta e cota dependem da configuração do usuário.

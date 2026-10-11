@@ -51,19 +51,21 @@ Opcional: copie `.env.example` para `.env.local`. Nenhum segredo deve usar o pre
 | `OPENROUTER_MODEL` | `openrouter/free` (padrão), ou ID completo terminado em `:free`; modelos pagos são recusados |
 | `NVIDIA_API_KEY` | Chave NVIDIA Build, somente no servidor |
 | `NVIDIA_MODEL` | `nvidia/nemotron-3-ultra-550b-a55b` (padrão), ou modelo disponível na conta |
-| `OPENAI_API_KEY` | Chave do provedor, somente no servidor |
-| `OPENAI_MODEL` | Modelo habilitado para Responses API na sua conta |
+| `OPENAI_API_KEY` | Chave da API, somente no servidor |
+| `OPENAI_MODEL` | `gpt-6-luna` por padrão; opcional para usar outro modelo habilitado na conta |
 | `AZURE_OPENAI_API_KEY` | Chave do recurso Azure, somente no servidor |
 | `AZURE_OPENAI_ENDPOINT` | URL base HTTPS do seu recurso, ou base terminada em `/openai/v1` |
 | `AZURE_OPENAI_DEPLOYMENT` | Nome do deployment habilitado para Responses API |
 
-OpenRouter e NVIDIA usam Chat Completions em endpoints fixos. OpenAI usa `/v1/responses`; Azure usa `/openai/v1/responses`. A API v1 do Azure não exige `api-version`. OpenAI/Azure exigem modelo/deployment configurado. Se selecionar um provedor real sem configurar os campos necessários, o painel informa o estado e bloqueia envio; a rota também retorna erro seguro. As ferramentas locais continuam funcionando.
+OpenRouter e NVIDIA usam Chat Completions em endpoints fixos. OpenAI usa `/v1/responses` e `gpt-6-luna` por padrão; Azure usa `/openai/v1/responses`. A API v1 do Azure não exige `api-version`. OpenAI exige uma chave; o modelo pode ser substituído com `OPENAI_MODEL`. Azure exige endpoint, chave e deployment. Se selecionar um provedor real sem configurar os campos necessários, o painel informa o estado e bloqueia envio; a rota também retorna erro seguro. As ferramentas locais continuam funcionando.
 
 Para ativar a IA gratuita, siga [o guia de OpenRouter/NVIDIA](docs/free-ai-providers.md). O OpenRouter usa somente modelos gratuitos e não faz fallback pago. O NVIDIA Build oferece acesso gratuito de desenvolvimento/avaliação, sujeito a limites e disponibilidade; não há promessa de acesso ilimitado ou gratuidade em produção. A troca de provedor exige nova prévia e autorização.
 
+Para ativar **OpenAI · GPT-6 Luna**, configure `OPENAI_API_KEY` no servidor; `OPENAI_MODEL` é opcional e assume `gpt-6-luna` quando vazio. A API é cobrada por uso e o nível gratuito não está disponível para esse modelo. Consulte [como configurar](docs/openai-gpt-6-luna.md) e os [preços atuais da API](https://developers.openai.com/api/docs/pricing).
+
 Os quatro provedores externos têm implementação real e testes de contrato HTTP com respostas controladas. **Autenticação e execução com contas reais não foram verificadas**, pois esta entrega não possui chaves e não realizou inferência externa. O Mock é identificado como demonstração e não faz alegações de análise por um modelo. O catálogo público indica apenas configuração local; não testa a chave nem a cota.
 
-Referências verificadas: [OpenRouter Free](https://openrouter.ai/openrouter/free), [NVIDIA Nemotron 3 Ultra](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b), [OpenAI Responses](https://platform.openai.com/docs/api-reference/responses) e [Azure Responses API](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/responses).
+Referências verificadas: [OpenRouter Free](https://openrouter.ai/openrouter/free), [NVIDIA Nemotron 3 Ultra](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b), [OpenAI Responses](https://platform.openai.com/docs/api-reference/responses), [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) e [Azure Responses API](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/responses).
 
 ## Testes e verificações
 
@@ -85,7 +87,7 @@ Resultado atualizado em 07/10/2026 após integração dos provedores gratuitos: 
 
 O lint usa ESLint, TypeScript, React Hooks e JSX a11y diretamente. Foi removida a configuração agregada do Next que introduzia uma dependência transitiva de desenvolvimento com advisory sem versão corrigida disponível; o código do Next e a stack da aplicação foram preservados.
 
-Verificação do construtor, em 11/10/2026: `npm run lint`, `npm run typecheck`, `npm test` (272 testes em 15 arquivos), `npm run test:e2e -- --workers=1` (48 cenários em Chromium) e `npm run build` passaram. E2E verificou seleção, prévia, plano e pacote gerado sem overflow em 320, 360, 390, 768, 1024 e 1440 px. Os testes de provedores usam respostas controladas; não houve chamada autenticada externa nem implantação Azure. Detalhes em [docs/verification.md](docs/verification.md).
+Verificação atual, em 11/10/2026: `npm run lint`, `npm run typecheck`, `npm test` (273 testes em 15 arquivos), `npm run test:e2e -- --workers=1` (50 cenários em Chromium) e `npm run build` passaram. E2E verificou seleção, prévia, plano e pacote gerado sem overflow em 320, 360, 390, 768, 1024 e 1440 px. Os testes de provedores usam respostas controladas; não houve chamada autenticada externa nem implantação Azure. Detalhes em [docs/verification.md](docs/verification.md).
 
 ## Estrutura principal
 

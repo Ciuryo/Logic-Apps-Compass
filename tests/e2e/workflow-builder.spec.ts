@@ -91,6 +91,18 @@ async function openBuilder(page: Page, configured: string[] = ["openrouter", "nv
   await expect(page.getByRole("heading", { name: "Construtor de workflow" })).toBeVisible();
 }
 
+test("construtor oferece OpenAI GPT-6 Luna com configuração e preços da API", async ({ page }) => {
+  await openBuilder(page);
+  const selector = page.getByLabel("Provedor de IA");
+  await selector.selectOption("openai");
+
+  await expect(selector.locator('option[value="openai"]')).toHaveText("OpenAI · GPT-6 Luna (padrão, pago)");
+  await expect(page.getByText("Como configurar OpenAI · GPT-6 Luna (padrão, pago)")).toBeVisible();
+  await expect(page.getByText("OPENAI_MODEL=gpt-6-luna")).toBeVisible();
+  await expect(page.getByText(/nível gratuito não está disponível/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Consultar preços da API" })).toHaveAttribute("href", "https://developers.openai.com/api/docs/pricing");
+});
+
 async function preparePreview(page: Page, message: string) {
   await page.getByLabel("Descreva o workflow em linguagem natural").fill(message);
   await page.getByRole("button", { name: "Preparar prévia", exact: true }).click();
