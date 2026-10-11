@@ -1,4 +1,5 @@
 import { redactContent } from "@/lib/security/redaction";
+import { buildWorkflowBuilderPrompt } from "@/lib/workflow-builder/prompt";
 import type { AiProvider, AiRequest, AiResponse } from "./types";
 import { curatedKnowledgeDocuments, curatedSources } from "./sources";
 
@@ -20,6 +21,10 @@ const instructions = [
   ...curatedKnowledgeDocuments.map((document) => `${document.title} (${document.topics.join(", ")}): ${document.summary}\nFonte: ${document.sourceUrl}; verificada em ${document.lastVerifiedAt}.`),
   `Cite somente referências curadas fornecidas: ${curatedSources.map((source) => `${source.title}: ${source.url}`).join("; ")}.`,
 ].join("\n");
+
+function systemInstructions(request: AiRequest): string {
+  return request.instructionProfile === "workflow-builder" ? buildWorkflowBuilderPrompt() : instructions;
+}
 
 function record(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === "object" && !Array.isArray(value); }
 function readAnswer(response: unknown): string {
@@ -79,10 +84,15 @@ abstract class RemoteAiProvider implements AiProvider {
         })(),
         timeout,
       ]);
-      // Referências externas sugeridas pelo modelo não entram no catálogo verificado.
+      const redactedAnswer = redactContent(answer);
+      if (request.instructionProfile === "workflow-builder") {
+        // URLs de APIs são dados do plano para revisão; a rota rejeita qualquer credencial redigida.
+        return { provider: this.provider, answer: redactedAnswer.content, sources: [], mock: false };
+      }
+      // Referências externas sugeridas pelo assistente educacional não entram no catálogo verificado.
       let unverifiedLinks = false;
       const citedUrls = new Set<string>();
-      const safeAnswer = redactContent(answer).content.replace(/https?:\/\/[^\s)\]>"']+/g, (url: string) => {
+      const safeAnswer = redactedAnswer.content.replace(/https?:\/\/[^\s)\]>"']+/g, (url: string) => {
         const normalizedUrl = url.replace(/[.,;]+$/, "");
         if (curatedSources.some((source) => source.url === normalizedUrl)) { citedUrls.add(normalizedUrl); return url; }
         unverifiedLinks = true;
@@ -99,7 +109,7 @@ abstract class RemoteAiProvider implements AiProvider {
 abstract class ResponsesProvider extends RemoteAiProvider {
   protected requestBody(request: AiRequest): unknown {
     return {
-      model: this.model, store: false, stream: false, max_output_tokens: 1800, instructions,
+      model: this.model, store: false, stream: false, max_output_tokens: 1800, instructions: systemInstructions(request),
       input: [{ role: "user", content: [{ type: "input_text", text: authorizedInput(request) }] }],
     };
   }
@@ -110,7 +120,7 @@ abstract class ChatCompletionsProvider extends RemoteAiProvider {
   protected requestBody(request: AiRequest): Record<string, unknown> {
     return {
       model: this.model, stream: false, max_tokens: 1800,
-      messages: [{ role: "system", content: instructions }, { role: "user", content: authorizedInput(request) }],
+      messages: [{ role: "system", content: systemInstructions(request) }, { role: "user", content: authorizedInput(request) }],
     };
   }
   protected responseAnswer(response: unknown): string { return readChatAnswer(response); }

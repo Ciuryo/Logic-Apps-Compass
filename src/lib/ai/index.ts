@@ -3,7 +3,7 @@ import { OpenAiProvider, AzureOpenAiProvider, OpenRouterAiProvider, NvidiaAiProv
 import { aiProviderIds, type AiProvider, type AiProviderId, type ProviderCatalog, type ProviderStatus } from "./types";
 
 export { MockAiProvider, OpenAiProvider, AzureOpenAiProvider, OpenRouterAiProvider, NvidiaAiProvider };
-export { aiModes, aiProviderIds, type AiProviderId, type AiMode, type AiRequest, type AiResponse, type AiProvider, type ProviderStatus, type ProviderCatalog } from "./types";
+export { aiModes, aiProviderIds, type AiProviderId, type AiMode, type AiInstructionProfile, type AiRequest, type AiResponse, type AiProvider, type ProviderStatus, type ProviderCatalog } from "./types";
 
 export function getProviderStatus(selected?: AiProviderId): ProviderStatus {
   const choice = selected ?? (process.env.AI_PROVIDER ?? "mock").trim().toLowerCase();
